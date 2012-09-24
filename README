@@ -1,0 +1,19 @@
+Pomodoro
+========
+
+This is simple Pomodoro app written in C++/Qt.
+
+Read more about Pomodoro at http://www.pomodorotechnique.com/ or stop procrastinating right now and go back to work!
+
+Icon is from GNOME icon theme is distributed under the terms of either
+GNU LGPL v.3 or Creative Commons BY-SA 3.0 license.
+
+Instalation
+-----------
+
+``make`` should work.
+
+Contribution
+------------
+
+I wouldn't recommend it unless you're willing to get a headache. This is my second program in C++, first in Qt, total mess.
