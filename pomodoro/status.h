@@ -4,6 +4,8 @@
 #include <QSystemTrayIcon>
 #include <QDialog>
 
+#include "log.h"
+
 QT_BEGIN_NAMESPACE
 class QAction;
 class QLCDNumber;
@@ -31,12 +33,14 @@ private slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
     void pomodoroConfirm();
     void openConfigurationDialog();
+    void openLogDialog();
     void run();
     void pause();
     void stop();
     void timerUpdate();
 
 private:
+    void createLog();
     void createActions();
     void createTrayIcon();
     void createStatusArea();
@@ -59,6 +63,7 @@ private:
 
     QAction *quitAction;
     QAction *configureAction;
+    QAction *logAction;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
     QLCDNumber *activeTime;
@@ -78,6 +83,8 @@ private:
 
     QTimer *timer;
     QTime *pomodoroTime;
+
+    Log *log;
 
     int pomodoroActive;
     int elapsed;

@@ -6,6 +6,7 @@
 
 Status::Status()
 {
+    createLog();
     createActions();
     createTrayIcon();
     createDefaultIntervals();
@@ -21,7 +22,7 @@ Status::Status()
 
     setWindowTitle(tr("Systray"));
 
-    cycle = QString("ibibibibl");
+    cycle = QString("ibibibil");
 }
 
 void Status::run()
@@ -45,6 +46,7 @@ void Status::pause()
 void Status::stop()
 {
     pomodoroActive = STOP;
+    cycleReset();
     updateStatusArea();
     timer->stop();
 }
@@ -68,6 +70,11 @@ void Status::openConfigurationDialog()
     }
 }
 
+void Status::openLogDialog()
+{
+    log->show();
+}
+
 void Status::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
@@ -89,18 +96,35 @@ void Status::pomodoroConfirm()
     int ret = msgBox.exec();
 
     switch(ret) {
-    case QMessageBox::Ok:
+    case QMessageBox::Yes:
+        log->write(0, "");
         break;
     case QMessageBox::No:
+        log->write(1, "");
+        break;
     default:
         break;
     }
+}
+
+void Status::createLog()
+{
+    try {
+        log = new Log(this);
+    } catch (char * msg) {
+        QCoreApplication::exit(EXIT_FAILURE);
+    }
+
+    log->hide();
 }
 
 void Status::createActions()
 {
     configureAction = new QAction(tr("&Configure"), this);
     connect(configureAction, SIGNAL(triggered()), this, SLOT(openConfigurationDialog()));
+
+    logAction = new QAction(tr("&Log"), this);
+    connect(logAction, SIGNAL(triggered()), this, SLOT(openLogDialog()));
 
     quitAction = new QAction(tr("&Quit"), this);
     connect(quitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
@@ -110,6 +134,7 @@ void Status::createTrayIcon()
 {
     trayIconMenu = new QMenu(this);
     trayIconMenu->addAction(configureAction);
+    trayIconMenu->addAction(logAction);
     trayIconMenu->addAction(quitAction);
 
     trayIcon = new QSystemTrayIcon(this);
@@ -227,7 +252,7 @@ void Status::stageFinished()
 {
     elapsed = 0;
     cycleIndex++;
-    if (cycleIndex > cycle.length()) {
+    if (cycleIndex >= cycle.length()) {
         cycleIndex = 0;
     }
     cycleStep();
@@ -235,23 +260,34 @@ void Status::stageFinished()
 
 void Status::cycleReset()
 {
+    elapsed = 0;
     cycleIndex = 0;
     cycleStep();
 }
 
 void Status::cycleStep()
 {
+    bool have_break = 0;
     if (cycle.at(cycleIndex) == QChar('i')) {
         pomodoroTime = pomodoroInterval;
         setStageTitle(tr("Pomodoro"));
     } else if (cycle.at(cycleIndex) == QChar('b')) {
         pomodoroTime = pomodoroBreak;
         setStageTitle(tr("Short break"));
+        have_break = 1;
     } else if (cycle.at(cycleIndex) == QChar('l')) {
         pomodoroTime = pomodoroLongBreak;
         setStageTitle(tr("Long break"));
+        have_break = 1;
     }
-    show();
+
+    if (have_break)
+    {
+        show();
+        pause();
+        pomodoroConfirm();
+        run();
+    }
 }
 
 void Status::setStageTitle(QString title) {
