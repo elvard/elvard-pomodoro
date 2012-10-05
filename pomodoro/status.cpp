@@ -89,6 +89,7 @@ void Status::trayActivated(QSystemTrayIcon::ActivationReason reason)
 
 void Status::pomodoroConfirm()
 {
+    pause();
     QMessageBox msgBox;
     msgBox.setText(tr("Pomodoro has just finnished.\n"
                       "Have you been distracted?"));
@@ -105,6 +106,7 @@ void Status::pomodoroConfirm()
     default:
         break;
     }
+    run();
 }
 
 void Status::createLog()
@@ -283,10 +285,8 @@ void Status::cycleStep()
 
     if (have_break)
     {
-        show();
-        pause();
         pomodoroConfirm();
-        run();
+        show();
     }
 }
 
