@@ -3,6 +3,7 @@
 
 #include <QSystemTrayIcon>
 #include <QDialog>
+#include <QDBusInterface>
 
 #include "log.h"
 
@@ -13,6 +14,7 @@ class QLabel;
 class QProgressBar;
 class QGroupBox;
 class QStackedWidget;
+class QDBusInterface;
 QT_END_NAMESPACE
 
 class Status: public QDialog
@@ -46,9 +48,11 @@ private:
     void createStatusArea();
     void createDefaultIntervals();
     void createTimer();
+    void createDBusConnection();
     void setPomodoroInterval(QTime time);
     void setPomodoroBreak(QTime time);
     void setPomodoroLongBreak(QTime time);
+    void setKopeteStatus(bool breakTime);
     void setIcon();
     void updateStatusArea();
 
@@ -82,7 +86,9 @@ private:
     QTime *pomodoroLongBreak;
 
     QTimer *timer;
-    QTime *pomodoroTime;
+    QTime  *pomodoroTime;
+
+    QDBusInterface *kopeteApp;
 
     Log *log;
 

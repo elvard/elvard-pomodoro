@@ -6,7 +6,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
-QT += sql
+QT += sql dbus
 
 # Input
 HEADERS += configDialog.h connection.h log.h status.h timer.h

@@ -12,6 +12,7 @@ Status::Status()
     createDefaultIntervals();
     createStatusArea();
     createTimer();
+    createDBusConnection();
     stop();
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
@@ -118,6 +119,11 @@ void Status::createLog()
     }
 
     log->hide();
+}
+
+void Status::createDBusConnection()
+{
+    kopeteApp = new QDBusInterface("org.kde.kopete", "/Kopete");
 }
 
 void Status::createActions()
@@ -287,6 +293,17 @@ void Status::cycleStep()
     {
         pomodoroConfirm();
         show();
+        setKopeteStatus(1);
+    } else {
+        setKopeteStatus(0);
+    }
+}
+
+void Status::setKopeteStatus(bool breakTime) {
+    if (breakTime) {
+        kopeteApp->call("setOnlineStatus", "Online", "");
+    } else {
+        kopeteApp->call("setOnlineStatus", "Busy", "Pomodoro! I'm back in 25 mins.");
     }
 }
 
